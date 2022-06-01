@@ -42,5 +42,12 @@ class TestcodeApplicationTests {
 		);
 	}
 
+	@Test
+	@DisplayName("예외 테스트")
+	void throwExceptionTest() {
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Study(-10));
+		String message = exception.getMessage();
+		assertEquals("limit은 0보다 커야한다.", message);
+	}
 
 }
