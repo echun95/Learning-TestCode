@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +49,23 @@ class TestcodeApplicationTests {
 		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Study(-10));
 		String message = exception.getMessage();
 		assertEquals("limit은 0보다 커야한다.", message);
+	}
+
+	@Test
+	@DisplayName("정해진 시간안에 성공 테스트")
+	void assertTimeoutTest() {
+//		assertTimeout(Duration.ofMillis(100), () -> {
+//			new Study(10);
+//			Thread.sleep(300);
+//		});
+		assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
+			new Study(10);
+			Thread.sleep(300);
+		});
+		//assertTimeout : 모든 로직이 끝나면 테스트가 끝남
+		//assertTimeoutPreemptively : 정해진 시간이 지나면 테스트가 끝남 - 어차피 실패할 테스트이기 떄문에
+		//assertTimeoutPreemptively 주의사항 : 테스트코드에서 람다 코드블럭은 별도의 쓰레드가 실행하기때문에 스프링 트랜잭션처리를 하는 쓰레드와 다른 쓰레드로 동작한다.
+		//때문에 트랜잭션의 롤백 처리를 받지 못하는 경우가 생길 수 있다. - 롤백과 상관없는 로직을 테스트할때만 사용하자.
 	}
 
 }
