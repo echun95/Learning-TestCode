@@ -4,6 +4,8 @@ import com.study.testcode.entity.Study;
 import com.study.testcode.entity.StudyStatus;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
@@ -14,11 +16,13 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 
+@ExtendWith(FindSlowTestExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestcodeApplicationTests {
 
-
+	@RegisterExtension
+	static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
 
 	@BeforeAll
 	static void beforeAll() throws Exception  {
@@ -31,6 +35,16 @@ class TestcodeApplicationTests {
 
 	@Test
 	void contextLoads() {
+	}
+
+	@Test
+	void slow_test() throws Exception  {
+	    //given
+	    Thread.sleep(1005L);
+		System.out.println("slow test!!!");
+	    //when
+
+	    //then
 	}
 
 	@Order(2)
