@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TestcodeApplicationTests {
 
 
@@ -32,6 +33,7 @@ class TestcodeApplicationTests {
 	void contextLoads() {
 	}
 
+	@Order(2)
 	@Test
 	@DisplayName("테스트 1")
 	void create_test1() throws Exception  {
@@ -44,6 +46,7 @@ class TestcodeApplicationTests {
 		);
 	}
 
+	@Order(1)
 	@Test
 	@DisplayName("예외 테스트")
 	void throwExceptionTest() {
