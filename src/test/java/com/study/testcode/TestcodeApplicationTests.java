@@ -2,10 +2,7 @@ package com.study.testcode;
 
 import com.study.testcode.entity.Study;
 import com.study.testcode.entity.StudyStatus;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -17,6 +14,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestcodeApplicationTests {
 
 
@@ -37,7 +35,7 @@ class TestcodeApplicationTests {
 	@Test
 	@DisplayName("테스트 1")
 	void create_test1() throws Exception  {
-		Study study = new Study(-10);
+		Study study = new Study(10);
 		assertAll(
 				()->assertNotNull(study),
 				()->assertEquals(StudyStatus.DRAFT, study.getStatus(), "스터디를 처음 만들면 상태값이 DRAFT여야 한다."),

@@ -1,8 +1,8 @@
 package com.study.testcode.entity;
 
 public class Study {
-    private StudyStatus status;
-//    private StudyStatus status = StudyStatus.DRAFT;
+//    private StudyStatus status;
+    private StudyStatus status = StudyStatus.DRAFT;
     private int limit;
 
     public Study(int limit) {
