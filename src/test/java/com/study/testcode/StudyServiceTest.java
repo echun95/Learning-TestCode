@@ -6,8 +6,7 @@ import com.study.testcode.domain.StudyStatus;
 import com.study.testcode.member.MemberService;
 import com.study.testcode.study.StudyRepository;
 import com.study.testcode.study.StudyService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +28,7 @@ import static org.mockito.Mockito.times;
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
+@Testcontainers
 class StudyServiceTest {
 
     @Mock
@@ -33,6 +37,23 @@ class StudyServiceTest {
     @Autowired
     StudyRepository studyRepository;
 
+    @Container
+    static MySQLContainer mySQLContainer = new MySQLContainer<>().withDatabaseName("studytest");
+
+    @BeforeEach
+    void beforeEach(){
+        studyRepository.deleteAll();
+    }
+
+//    @BeforeAll
+//    static void beforeAll(){
+//        mySQLContainer.start();
+//        System.out.println(mySQLContainer.getJdbcUrl());
+//    }
+//    @AfterAll
+//    static void afterAll(){
+//        mySQLContainer.stop();
+//    }
 
     @Test
     void createNewStudy() {
