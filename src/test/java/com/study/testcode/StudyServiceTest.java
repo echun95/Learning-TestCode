@@ -40,8 +40,8 @@ public class StudyServiceTest {
             memberService.validate(22L);
         });
         StudyService studyService = new StudyService(memberService, studyRepository);
-        //when
 
-        //then
+        verify(memberService, times(1)).validate(22L); //validate 메서드가 한번 실행되는지 확인
+        verify(memberService, never()).validate(any()); //한번도 호출되지 않아야함
     }
 }
