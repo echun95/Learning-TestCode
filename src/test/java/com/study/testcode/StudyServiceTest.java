@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -37,8 +38,12 @@ class StudyServiceTest {
     @Autowired
     StudyRepository studyRepository;
 
+//    @Container
+//    static MySQLContainer mySQLContainer = new MySQLContainer<>().withDatabaseName("studytest");
+
     @Container
-    static MySQLContainer mySQLContainer = new MySQLContainer<>().withDatabaseName("studytest");
+    static GenericContainer mySQLContainer = new GenericContainer("mysql").withEnv("MYSQL_DB", "studytest")
+            .withExposedPorts(3006);
 
     @BeforeEach
     void beforeEach(){
