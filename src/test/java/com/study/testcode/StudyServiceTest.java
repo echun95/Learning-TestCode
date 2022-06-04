@@ -1,54 +1,80 @@
 package com.study.testcode;
 
-import com.study.testcode.entity.Study;
-import org.junit.jupiter.api.Assertions;
+import com.study.testcode.domain.Member;
+import com.study.testcode.domain.Study;
+import com.study.testcode.domain.StudyStatus;
+import com.study.testcode.member.MemberService;
+import com.study.testcode.study.StudyRepository;
+import com.study.testcode.study.StudyService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class StudyServiceTest {
+@ActiveProfiles("test")
+class StudyServiceTest {
 
     @Mock
     MemberService memberService;
 
-    @Mock
+    @Autowired
     StudyRepository studyRepository;
 
 
     @Test
-    void createStudyService() throws Exception  {
-        //given
-//        MemberService memberService = mock(MemberService.class);
-//        StudyRepository studyRepository = mock(StudyRepository.class);
+    void createNewStudy() {
+        System.out.println("========");
+
+        // Given
+        StudyService studyService = new StudyService(memberService, studyRepository);
+        assertNotNull(studyService);
+
         Member member = new Member();
         member.setId(1L);
-        member.setEmail("sadf@asdf.com");
+        member.setEmail("keesun@email.com");
 
-        when(memberService.findById(1L)).thenReturn(Optional.of(member));  //Stubbing - memberService.findById(1L)이라는 값이 들어오면 내가 만든 member가 리턴된다.
-        when(memberService.findById(any())).thenReturn(Optional.of(member)); //모든 리턴은 내가만든 member 리턴.
+        Study study = new Study(10, "테스트");
+
         given(memberService.findById(1L)).willReturn(Optional.of(member));
-        given(studyRepository.save(study)).willReturn(study);
 
+        // When
+        studyService.createNewStudy(1L, study);
 
-
-        doThrow(new IllegalArgumentException()).when(memberService).validate(22L);  //22L 파라미터로 validate를 실행하면 해당 예외를 던진다.
-        Assertions.assertThrows(IllegalArgumentException.class, ()->{
-            memberService.validate(22L);
-        });
-        StudyService studyService = new StudyService(memberService, studyRepository);
-        verify(memberService, times(1)).validate(22L); //validate 메서드가 한번 실행되는지 확인
+        // Then
+        assertEquals(1L, study.getOwnerId());
         then(memberService).should(times(1)).notify(study);
-        verify(memberService, never()).validate(any()); //한번도 호출되지 않아야함
         then(memberService).shouldHaveNoMoreInteractions();
     }
+
+    @DisplayName("다른 사용자가 볼 수 있도록 스터디를 공개한다.")
+    @Test
+    void openStudy() {
+        // Given
+        StudyService studyService = new StudyService(memberService, studyRepository);
+        Study study = new Study(10, "더 자바, 테스트");
+        assertNull(study.getOpenedDateTime());
+
+        // When
+        studyService.openStudy(study);
+
+        // Then
+        assertEquals(StudyStatus.OPENED, study.getStatus());
+        assertNotNull(study.getOpenedDateTime());
+        then(memberService).should().notify(study);
+    }
+
+
 }
