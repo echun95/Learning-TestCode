@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,14 +36,19 @@ public class StudyServiceTest {
 
         when(memberService.findById(1L)).thenReturn(Optional.of(member));  //Stubbing - memberService.findById(1L)이라는 값이 들어오면 내가 만든 member가 리턴된다.
         when(memberService.findById(any())).thenReturn(Optional.of(member)); //모든 리턴은 내가만든 member 리턴.
+        given(memberService.findById(1L)).willReturn(Optional.of(member));
+        given(studyRepository.save(study)).willReturn(study);
+
+
 
         doThrow(new IllegalArgumentException()).when(memberService).validate(22L);  //22L 파라미터로 validate를 실행하면 해당 예외를 던진다.
         Assertions.assertThrows(IllegalArgumentException.class, ()->{
             memberService.validate(22L);
         });
         StudyService studyService = new StudyService(memberService, studyRepository);
-
         verify(memberService, times(1)).validate(22L); //validate 메서드가 한번 실행되는지 확인
+        then(memberService).should(times(1)).notify(study);
         verify(memberService, never()).validate(any()); //한번도 호출되지 않아야함
+        then(memberService).shouldHaveNoMoreInteractions();
     }
 }
