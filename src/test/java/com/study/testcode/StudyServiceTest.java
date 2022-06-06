@@ -13,7 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -30,6 +35,7 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 @Testcontainers
+@ContextConfiguration(initializers = StudyServiceTest.ContainerPropertyInitializer.class)
 class StudyServiceTest {
 
     @Mock
@@ -37,6 +43,9 @@ class StudyServiceTest {
 
     @Autowired
     StudyRepository studyRepository;
+//    @Autowired
+//    Environment environment;
+    @Value("${container.port}") int port;
 
 //    @Container
 //    static MySQLContainer mySQLContainer = new MySQLContainer<>().withDatabaseName("studytest");
@@ -47,6 +56,9 @@ class StudyServiceTest {
 
     @BeforeEach
     void beforeEach(){
+//        System.out.println(mySQLContainer.getMappedPort(3006)   );
+//        System.out.println(environment.getProperty("container.port"));
+        System.out.println(port);
         studyRepository.deleteAll();
     }
 
@@ -102,5 +114,12 @@ class StudyServiceTest {
         then(memberService).should().notify(study);
     }
 
+    static class ContainerPropertyInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>{
+        @Override
+        public void initialize(ConfigurableApplicationContext context) {
+            TestPropertyValues.of("container.port=" + mySQLContainer.getMappedPort(3006))
+                    .applyTo(context.getEnvironment());
+        }
+    }
 
 }
