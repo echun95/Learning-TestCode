@@ -28,8 +28,8 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 /* testcontainers */
 	testImplementation "org.testcontainers:testcontainers:1.15.3"
-	testImplementation "org.testcontainers:junit-jupiter:1.15.3"
-	testImplementation "org.testcontainers:mysql:1.15.3"
+	testImplementation 'org.testcontainers:junit-jupiter:1.17.1'
+	testImplementation 'org.testcontainers:mysql:1.17.1'
 }
 
 tasks.named('test') {

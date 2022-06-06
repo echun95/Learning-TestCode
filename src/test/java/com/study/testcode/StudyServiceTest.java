@@ -19,11 +19,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 @Testcontainers
-@ContextConfiguration(initializers = StudyServiceTest.ContainerPropertyInitializer.class)
+//@ContextConfiguration(initializers = StudyServiceTest.ContainerPropertyInitializer.class)
 class StudyServiceTest {
 
     @Mock
@@ -50,9 +52,12 @@ class StudyServiceTest {
 //    @Container
 //    static MySQLContainer mySQLContainer = new MySQLContainer<>().withDatabaseName("studytest");
 
+//    @Container
+//    static GenericContainer mySQLContainer = new GenericContainer("mysql").withEnv("MYSQL_DB", "studytest")
+//            .withExposedPorts(3006);
+
     @Container
-    static GenericContainer mySQLContainer = new GenericContainer("mysql").withEnv("MYSQL_DB", "studytest")
-            .withExposedPorts(3006);
+    static DockerComposeContainer composeContainer = new DockerComposeContainer(new File("src/test/resources/docker-compose.yml"));
 
     @BeforeEach
     void beforeEach(){
@@ -114,12 +119,12 @@ class StudyServiceTest {
         then(memberService).should().notify(study);
     }
 
-    static class ContainerPropertyInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>{
-        @Override
-        public void initialize(ConfigurableApplicationContext context) {
-            TestPropertyValues.of("container.port=" + mySQLContainer.getMappedPort(3006))
-                    .applyTo(context.getEnvironment());
-        }
-    }
+//    static class ContainerPropertyInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>{
+//        @Override
+//        public void initialize(ConfigurableApplicationContext context) {
+//            TestPropertyValues.of("container.port=" + mySQLContainer.getMappedPort(3006))
+//                    .applyTo(context.getEnvironment());
+//        }
+//    }
 
 }
